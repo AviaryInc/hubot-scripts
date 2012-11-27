@@ -107,3 +107,19 @@ module.exports = (robot) ->
     if match != "best" && match != "worst"
       msg.send "\"#{match}\" has #{karma.get(match)} karma."
   
+  robot.router.get '/hubot/karma', (req, res) ->
+    rows = []
+    for own key, value of robot.brain.data.karma
+      rows.push "<tr><td>#{key}</td><td>#{value}</td></tr>"
+    res.end """
+      <html>
+        <head>
+          <title>Instant Karma™</title>
+        </head>
+        <body>
+          <table>
+          #{rows.join '\n'}
+          </table>
+        </body>
+      </html>
+      """
