@@ -111,7 +111,9 @@ module.exports = (robot) ->
     rows = []
     for own key, value of robot.brain.data.karma
       rows.push "<tr><td>#{key}</td><td>#{value}</td></tr>"
-    res.end """
+    res.writeHead 200,
+      "Content-Type": "text/html; charset=utf-8"
+    res.write """
       <html>
         <head>
           <title>Instant Karma™</title>
@@ -123,3 +125,4 @@ module.exports = (robot) ->
         </body>
       </html>
       """
+    res.end()
