@@ -18,6 +18,9 @@
 # Author:
 #   stuartf
 
+htmlEscape = (html) ->
+  return String(html).replace(/&(?!\w+;)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+
 class Karma
   
   constructor: (@robot) ->
@@ -110,7 +113,12 @@ module.exports = (robot) ->
   robot.router.get '/hubot/karma', (req, res) ->
     rows = []
     for own key, value of robot.brain.data.karma
-      rows.push "<tr><td class=\"key\">#{key}</td><td class=\"value\">#{value}</td></tr>"
+      numClass = ""
+      if value == 0 then numClass = "zero"
+      else if value > 0 then numClass = "positive"
+      else numClass = "negative"
+      rows.push "<tr><td class=\"key\">#{htmlEscape key}</td><td class=\"value #{numClass}\">#{value}</td></tr>"
+    rows.reverse()
     res.writeHead 200,
       "Content-Type": "text/html; charset=utf-8"
     res.write """
@@ -118,21 +126,49 @@ module.exports = (robot) ->
         <head>
           <title>Instant Karma™</title>
           <style type="text/css">
+          html, body{
+            font: 16px Courier, monospace;
+          }
           table {
-            width: 800px;
-            margin 0 auto;
+            width: 600px;
+            max-width: 100%;
+            margin: 0 auto;
+            border: solid 1px #ecf1ef;
+            border-spacing: 5px;
+            border-collapse: collapse;
+          }
+          table tr:nth-child(even) {
+            background-color: #ecf1ef;
+          }
+          table tr:nth-child(odd) {
+            background-color: #fff;
           }
           table td {
-            width: 50%;
+            padding: 5px;
+          }
+          table td.key {
+            width: 90%;
           }
           table td.value {
+            width: 10%;
             text-align: right;
+          }
+          table td.value.zero {
+            color: gray;
+          }
+          table td.value.negative {
+            color: #F18281;
+          }
+          table td.value.positive {
+            color: #3A5FCD;
           }
           </style>
         </head>
         <body>
           <table>
-          #{rows.join '\n'}
+          <tbody>
+            #{rows.join '\n      '}
+          </tbody>
           </table>
         </body>
       </html>
