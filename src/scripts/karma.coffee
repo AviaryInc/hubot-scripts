@@ -110,13 +110,25 @@ module.exports = (robot) ->
   robot.router.get '/hubot/karma', (req, res) ->
     rows = []
     for own key, value of robot.brain.data.karma
-      rows.push "<tr><td>#{key}</td><td>#{value}</td></tr>"
+      rows.push "<tr><td class=\"key\">#{key}</td><td class=\"value\">#{value}</td></tr>"
     res.writeHead 200,
       "Content-Type": "text/html; charset=utf-8"
     res.write """
       <html>
         <head>
           <title>Instant Karma™</title>
+          <style type="text/css">
+          table {
+            width: 800px;
+            margin 0 auto;
+          }
+          table td {
+            width: 50%;
+          }
+          table td.value {
+            text-align: right;
+          }
+          </style>
         </head>
         <body>
           <table>
